@@ -29,7 +29,6 @@ var token string
 
 func main() {
 	http.HandleFunc("/callback", callbackHandler)
-	http.HandleFunc("/notify", notifyHandler)
 	http.HandleFunc("/auth", authHandler)
 	clientID = os.Getenv("ClientID")
 	clientSecret = os.Getenv("ClientSecret")
@@ -38,23 +37,6 @@ func main() {
 	fmt.Printf("ENV port:%s, cid:%s csecret:%s\n", port, clientID, clientSecret)
 	addr := fmt.Sprintf(":%s", port)
 	http.ListenAndServe(addr, nil)
-}
-
-func notifyHandler(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm() // Populates request.Form
-	msg := r.Form.Get("msg")
-	fmt.Printf("Get msg=%s\n", msg)
-
-	data := url.Values{}
-	data.Add("message", msg)
-
-	byt, err := apiCall("POST", apiNotify, data, token)
-	fmt.Println("ret:", string(byt), " err:", err)
-
-	res := newTokenResponse(byt)
-	fmt.Println("result:", res)
-	token = res.AccessToken
-	w.Write(byt)
 }
 
 func callbackHandler(w http.ResponseWriter, r *http.Request) {
